@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -13,6 +14,7 @@ namespace Topic_4_Time_and_sound
         SpriteFont font;
         float seconds,startTime;
         MouseState mouseState;
+        SoundEffect  explode;
 
         public Game1()
         {
@@ -37,7 +39,8 @@ namespace Topic_4_Time_and_sound
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             bombTexture = Content.Load<Texture2D>("bomb");
             font = Content.Load<SpriteFont>("File");
-            
+            explode = Content.Load<SoundEffect>("explosion");
+
             // TODO: use this.Content to load your game content here
         }
 
@@ -46,12 +49,18 @@ namespace Topic_4_Time_and_sound
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             seconds = (float)gameTime.TotalGameTime.TotalSeconds - startTime;
-            if (seconds > 15) // Takes a timestamp every 10 seconds.
+            if (seconds > 15) 
                 startTime = (float)gameTime.TotalGameTime.TotalSeconds;
             mouseState = Mouse.GetState();
             if (mouseState.LeftButton == ButtonState.Pressed)
                 startTime = (float)gameTime.TotalGameTime.TotalSeconds;
-            // TODO: Add your update logic here
+            
+            if (seconds >= 15)
+            {
+                explode.Play();
+                startTime = (float)gameTime.TotalGameTime.TotalSeconds;
+            }
+           
 
             base.Update(gameTime);
         }
@@ -62,8 +71,7 @@ namespace Topic_4_Time_and_sound
             _spriteBatch.Begin();
             _spriteBatch.Draw(bombTexture, bombRect, Color.White);
             //_spriteBatch.DrawString(font,"1.00", new Vector2(270, 200), Color.White);
-            _spriteBatch.DrawString(font, seconds.ToString("00:00"), new Vector2(270, 200), Color.Black);
-            
+            _spriteBatch.DrawString(font,(15 - seconds).ToString("00:00"), new Vector2(270, 200), Color.Black);
             _spriteBatch.End();
             // TODO: Add your drawing code here
 
