@@ -15,7 +15,9 @@ namespace Topic_4_Time_and_sound
         float seconds,startTime;
         MouseState mouseState;
         SoundEffect  explode;
-
+        Texture2D nukeTexture;
+        Rectangle nukeRect;
+        bool exploded = false;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -29,6 +31,7 @@ namespace Topic_4_Time_and_sound
             _graphics.PreferredBackBufferHeight = 500;
             _graphics.PreferredBackBufferWidth = 800;
             bombRect = new Rectangle(50, 50, 700, 400);
+            nukeRect = new Rectangle(50, 50, 700, 400);
             // TODO: Add your initialization logic here
 
             base.Initialize();
@@ -40,6 +43,7 @@ namespace Topic_4_Time_and_sound
             bombTexture = Content.Load<Texture2D>("bomb");
             font = Content.Load<SpriteFont>("File");
             explode = Content.Load<SoundEffect>("explosion");
+            nukeTexture = Content.Load<Texture2D>("nuke");
 
             // TODO: use this.Content to load your game content here
         }
@@ -49,18 +53,20 @@ namespace Topic_4_Time_and_sound
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             seconds = (float)gameTime.TotalGameTime.TotalSeconds - startTime;
-            if (seconds > 15) 
-                startTime = (float)gameTime.TotalGameTime.TotalSeconds;
+            
             mouseState = Mouse.GetState();
             if (mouseState.LeftButton == ButtonState.Pressed)
                 startTime = (float)gameTime.TotalGameTime.TotalSeconds;
             
-            if (seconds >= 15)
+            if (seconds >= 15 && !exploded)
             {
                 explode.Play();
-                startTime = (float)gameTime.TotalGameTime.TotalSeconds;
+                exploded = true;
             }
-           
+            if (seconds >= 20) 
+            {
+                Exit();
+            }
 
             base.Update(gameTime);
         }
@@ -72,6 +78,11 @@ namespace Topic_4_Time_and_sound
             _spriteBatch.Draw(bombTexture, bombRect, Color.White);
             //_spriteBatch.DrawString(font,"1.00", new Vector2(270, 200), Color.White);
             _spriteBatch.DrawString(font,(15 - seconds).ToString("00:00"), new Vector2(270, 200), Color.Black);
+            if (seconds >= 15) 
+            {
+                _spriteBatch.Draw(nukeTexture, nukeRect, Color.White);
+            }
+           
             _spriteBatch.End();
             // TODO: Add your drawing code here
 
